@@ -16,14 +16,33 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
+import environ
+
+# Initialize environment variables
+env = environ.Env(
+    # Set casting, default value
+    DEBUG=(bool, False)
+)
+
+# Reading .env file
+environ.Env.read_env()
+
+# Now you can use env() to access your environment variables
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
+
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--=ug!=6e3kan$*lz9+!h07&zonqtzt8wzlne(4$a3m*5n^d%k7'
+# SECRET_KEY = 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 
