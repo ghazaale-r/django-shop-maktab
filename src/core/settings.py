@@ -87,11 +87,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db('SQLITE_URL', default='sqlite:///db.sqlite3'),
+    'development': env.db('DATABASE_URL_LOCAL', default='postgres://user:password@localhost:5432/dev_db_name'),
+    'deployment': env.db('DATABASE_URL_DEPLOY', default='postgres://user:password@localhost:5432/deploy_db_name'),
 }
 
 
