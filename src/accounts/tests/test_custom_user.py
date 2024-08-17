@@ -96,3 +96,31 @@ class ProfileTests(TestCase):
         self.assertEqual(profile.get_fullname(), "Ali Rezaei")
 
 
+
+
+
+from django.db.models.signals import post_save
+from unittest.mock import MagicMock
+
+class SignalTest(TestCase):
+
+    def test_signal_triggered_on_user_creation(self):
+        mock_handler = MagicMock()
+        post_save.connect(mock_handler, sender=User)
+
+        try:
+            email = "user@example.com"
+            user = User.objects.create_user(email=email, password="password123")
+
+            self.assertTrue(mock_handler.called)
+            mock_handler.assert_called_once_with(
+                sender=User,
+                instance=user,
+                created=True,
+                signal=post_save,
+                update_fields=None,
+                raw=False,
+                using='default'
+            )
+        finally:
+            post_save.disconnect(mock_handler, sender=User)

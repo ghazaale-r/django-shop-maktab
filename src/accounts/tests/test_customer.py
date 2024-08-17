@@ -93,7 +93,38 @@ class CustomerProfileTests(TestCase):
         self.assertTrue(Profile.objects.filter(user=customer).exists())
 
         profile = Profile.objects.get(user=customer)
-        self.assertEqual(profile.user, customer) 
+        # self.assertEqual(profile.user, customer) # erorr  <User: customer@example.com> != <Customer: customer@example.com>
+
+        # Compare user ids instead of objects directly
+        self.assertEqual(profile.user.id, customer.id)
         self.assertEqual(profile.get_fullname(), "کاربر جدید")
         
         
+
+from django.db.models.signals import post_save
+from unittest.mock import MagicMock
+
+class SignalTest(TestCase):
+
+    def test_signal_triggered_on_customer_creation(self):
+        mock_handler = MagicMock()
+        post_save.connect(mock_handler, sender=Customer)
+
+        try:
+            email = "customer@example.com"
+            customer = Customer.objects.create_customer(email=email, password="password123")
+
+            # Assert that the signal was triggered once
+            self.assertTrue(mock_handler.called)
+            mock_handler.assert_called_once_with(
+                sender=Customer,
+                instance=customer,
+                created=True,
+                signal=post_save,
+                update_fields=None,
+                raw=False,
+                using='default'
+            )
+        finally:
+            post_save.disconnect(mock_handler, sender=Customer)
+
